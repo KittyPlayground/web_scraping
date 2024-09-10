@@ -1,18 +1,27 @@
+import csv
 import requests
 from bs4 import BeautifulSoup
 
-# Send the HTTP request
-res = requests.get("https://example.com")  # Replace with your URL
+res = requests.get("https://www.geeksforgeeks.org/fundamentals-of-algorithms/")  # Replace with your URL
 
-# Check if the request was successful
 if res.status_code == 200:
     # Parse the HTML content
     soup = BeautifulSoup(res.text, 'html.parser')
 
-    # Find all h1 tags and print them
-    h1_tags = soup.find_all('h1')
-    for h1 in h1_tags:
-        print(h1.text)  # Print the text inside each h1 tag
+    # Open a CSV file for writing
+    with open('web_scraping.csv', 'w', newline='') as csvfile:
+        csvwriter = csv.writer(csvfile)
+
+        # Find all h2 tags and paragraphs
+        h2_tags = soup.find_all('h2')
+        for h2 in h2_tags:
+            h2_text = h2.text.strip()
+            p1 = h2.find_next('p')
+            p1_text = p1.text.strip() if p1 else ''
+            print(f"{h2_text}")
+            print(f"{p1_text}")
+
+            csvwriter.writerow([h2_text, p1_text])
 
 else:
-    print("Error: Unable to fetch the page.")
+    print("Request failed :", res.status_code)
